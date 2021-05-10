@@ -1,0 +1,80 @@
+syntax = "proto3";
+option csharp_namespace = "DatabaseService_Grpc";
+
+//import "google/protobuf/timestamp.proto";
+package DatabaseGRPC;
+
+service GrpcDatabaseProject {
+//Project Grud
+  rpc GetProject(UserDbInfomation) returns (D_Project);
+  rpc AddProject(ProjectUserInfomation) returns (intger);
+  rpc EditProject(ProjectUserInfomation) returns (intger);
+  rpc RemoveProject(ProjectUserInfomation) returns (intger);
+
+  rpc GetProjects(UserDbInfomation) returns (D_Projects);
+  rpc GetDocuments(UserDbInfomation) returns (D_Documents);
+// documents
+rpc AddDocument(D_Document) returns (intger);
+rpc GetDocument(UserDbInfomation) returns (D_Document);
+rpc UpdateDocument(D_Document) returns (intger);
+rpc RemoveDocument(UserDbInfomation) returns (intger);
+// RemoteFile
+rpc AddRemoteFile(D_RemoteFile) returns (intger);
+rpc GetRemoteFile(UserDbInfomation) returns (D_RemoteFile);
+rpc UpdateRemoteFile(D_RemoteFile) returns (D_RemoteFile);
+rpc RemoveRemoteFile(UserDbInfomation) returns (intger);
+rpc GetRemoteFiles(UserDbInfomation) returns (D_RemoteFiles);
+}
+
+message UserDbInfomation{
+    int32 ID = 1;
+    string DbName = 2;     
+}
+
+message ProjectUserInfomation{
+
+    UserDbInfomation user=1;
+    D_Project project = 2;
+}
+
+message intger{
+    int32 number = 1;
+}
+// Lists
+message D_Documents{
+    repeated D_Document D_Documents = 1;
+}
+message D_Projects{
+    repeated D_Project D_Project = 1;
+}
+message D_RemoteFiles{
+    repeated D_RemoteFile D_RemoteFile = 1;
+}
+// Project
+
+message D_Project{
+	int32 id = 1;
+    string name = 2;
+    bool completed = 3;
+    string lastedited = 4;
+    string endDate = 5;
+    repeated D_Document documents = 6;
+}
+// document
+message D_Document{
+        int32 ID = 1;
+        int32 projectID = 2;
+        string title = 3;
+        string type = 4;
+        string data = 5;
+        float completedCount = 6;
+        repeated string completed = 7;
+}
+// RemoteFile
+message D_RemoteFile{
+     int32 ID = 1;
+     string title = 2;
+     string type = 3;
+     int32 projectID = 4;
+     string path = 5;
+}

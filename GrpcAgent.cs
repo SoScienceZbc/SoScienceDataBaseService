@@ -30,16 +30,13 @@ namespace DatabaseDocomentService
 
             app.UseRouting();
 
+            app.UseGrpcWeb();
+
             app.UseEndpoints(endpoints =>
             {
 
-                endpoints.MapGrpcService<DataBaseService>();
-               // endpoints.MapGet("/", async x => await x.Response.WriteAsync("Something have happen"));
-
-                Console.WriteLine("Hello from GrpcAgent inside maping services");
-
-                //endpoints.MapGet("/", async x => await x.Response.WriteAsync("Something have happen"));
-                //endpoints.MapGet("/", async context => {await context.Response.WriteAsync("Your are not to use this in this manner.");});
+                endpoints.MapGrpcService<DataBaseService>().EnableGrpcWeb();
+               
             });
         }
     }

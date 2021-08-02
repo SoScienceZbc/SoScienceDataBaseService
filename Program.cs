@@ -20,7 +20,8 @@ namespace DatabaseDocomentService
             Host.CreateDefaultBuilder(args).ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
-                    
+
+                    //Test code below..
                     //services.AddGrpc().Services.BuildServiceProvider(new ServiceProviderOptions {ValidateOnBuild = true });
                     //Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(x =>
                     //{

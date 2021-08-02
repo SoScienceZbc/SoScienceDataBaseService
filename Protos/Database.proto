@@ -17,7 +17,7 @@ service GrpcDatabaseProject {
 rpc AddDocument(D_Document) returns (intger);
 rpc GetDocument(UserDbInfomation) returns (D_Document);
 rpc UpdateDocument(D_Document) returns (intger);
-rpc RemoveDocument(UserDbInfomation) returns (intger);
+rpc RemoveDocument(ProjectUserInfomation) returns (intger);
 // RemoteFile
 rpc AddRemoteFile(D_RemoteFile) returns (intger);
 rpc GetRemoteFile(UserDbInfomation) returns (D_RemoteFile);
@@ -51,7 +51,6 @@ message D_RemoteFiles{
     repeated D_RemoteFile D_RemoteFile = 1;
 }
 // Project
-
 message D_Project{
 	int32 id = 1;
     string name = 2;

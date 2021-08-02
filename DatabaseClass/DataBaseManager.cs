@@ -5,20 +5,41 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Security.Cryptography;
 using DatabaseService_Grpc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using System.Text.RegularExpressions;
+using System.IO;
 
 namespace SoScienceDataServer
 {
     class DataBaseManager
     {
         private string con;
+        static IConfiguration Config;
         //private IHashing hashing;
         private SHA256 hashing;
         public DataBaseManager(string db)
         {
-            con = @"Server=" + db + ";Database=SoScience;User Id=SoScienceExecuter;Password=k6UwAf4K*puBTEb^";
-            //hashing = new SHA256();
+            Config = new ConfigurationBuilder().AddJsonFile(getRootPath("AppCode.json")).Build();
+
+            con =
+                $"Server={db};Database={Config.GetSection("DbConnectionConfig")["Database"]};" +
+                $"User Id={Config.GetSection("DbConnectionConfig")["User Id"]};" +
+                $"Password={Config.GetSection("DbConnectionConfig")["Password"]}";
             hashing = SHA256.Create();
         }
+
+        static string getRootPath(string rootFilename)
+        {
+            string _root;
+            var rootDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            Regex matchThepath = new Regex(@"(?<!fil)[A-Za-z]:\\+[\S\s]*?(?=\\+bin)");
+            var appRoot = matchThepath.Match(rootDir).Value;
+            _root = Path.Combine(appRoot, rootFilename);
+
+            return _root;
+        }
+
 
         #region project
         public int AddProject(string username, D_Project project)
@@ -101,13 +122,18 @@ namespace SoScienceDataServer
             }
             if (project != null)
             {
-                
+
                 project.Documents.AddRange(GetDocuments(id));
                 project.Documents.AddRange(GetRemoteFiles(id));
             }
             return project;
         }
-
+        /// <summary>
+        /// deletes a project in the database
+        /// </summary>
+        /// <param name="id">The projectId</param>
+        /// <param name="username">The unilogin Name</param>
+        /// <returns></returns>
         public int RemoveProject(int id, string username)
         {
             using (SqlConnection con = new SqlConnection(this.con))
@@ -147,7 +173,7 @@ namespace SoScienceDataServer
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        projects.Add(new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = reader.GetDateTime("EndDate").ToString()});
+                        projects.Add(new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = reader.GetDateTime("EndDate").ToString() });
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -172,7 +198,13 @@ namespace SoScienceDataServer
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        documents.Add(new D_Document{ ProjectID=reader.GetInt32("ProjectID"), Title=reader.GetString("Title"), ID=reader.GetInt32("ID"), CompletedCount=reader.GetInt32("completed")});
+                        documents.Add(new D_Document
+                        {
+                            ProjectID = reader.GetInt32("ProjectID"),
+                            Title = reader.GetString("Title"),
+                            ID = reader.GetInt32("ID"),
+                            CompletedCount = reader.GetInt32("completed")
+                        });
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -309,7 +341,13 @@ namespace SoScienceDataServer
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        document = new D_Document { ProjectID = reader.GetInt32("ProjectID"), Title = reader.GetString("title"), Data = reader.GetString("data"), ID = reader.GetInt32("ID") };
+                        document = new D_Document
+                        {
+                            ProjectID = reader.GetInt32("ProjectID"),
+                            Title = reader.GetString("title"),
+                            Data = reader.GetString("data"),
+                            ID = reader.GetInt32("ID"),
+                        };
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -332,6 +370,7 @@ namespace SoScienceDataServer
                         reader.Close();
                         cmd.Dispose();
                     }
+                    document.CompletedCount = document.Completed.Count;
                 }
             }
             return document;

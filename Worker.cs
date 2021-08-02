@@ -15,7 +15,6 @@ namespace DatabaseDocomentService
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
@@ -23,19 +22,19 @@ namespace DatabaseDocomentService
         #region ServiceSetup
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            //TODO: AddSSL in the "lo.UseHttps(Path,Name)"
             _logger.LogInformation("Worker running at: {time} just before Creating DocomentServce", DateTimeOffset.Now);
-            await Host.CreateDefaultBuilder().ConfigureWebHostDefaults(builder =>
-                   {
-                   builder.ConfigureKestrel(options =>
-                       {
-                           options.Listen(System.Net.IPAddress.Parse("192.168.1.103"), 5003, listenOptions =>
-                           {
-
-                               listenOptions.Protocols = HttpProtocols.Http2;
-                           });
-                       }).UseKestrel().UseStartup<GrpcAgent>().ConfigureKestrel(op => { op.Listen(System.Net.IPAddress.Any, 500, c => { c.Protocols = HttpProtocols.Http2; }); } );
-                   }).Build().StartAsync(stoppingToken);
-
+            await Host.CreateDefaultBuilder().ConfigureWebHostDefaults(cw =>
+            {
+                cw.UseKestrel().UseStartup<GrpcAgent>().ConfigureKestrel(kj =>
+                {
+                    kj.Listen(System.Net.IPAddress.Any, 48041, lo =>
+                    {
+                        //lo.UseHttps();
+                        lo.Protocols = HttpProtocols.Http1;
+                    });
+                });
+            }).Build().StartAsync(stoppingToken);           
 
             //while (!stoppingToken.IsCancellationRequested)
             //{

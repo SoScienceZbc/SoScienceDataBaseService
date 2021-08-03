@@ -17,8 +17,12 @@ namespace DatabaseDocomentService
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            services.AddGrpc();
+
+            services.AddGrpc(op =>
+            {
+                op.MaxReceiveMessageSize = null;
+                op.MaxSendMessageSize = null;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -36,7 +40,7 @@ namespace DatabaseDocomentService
             {
 
                 endpoints.MapGrpcService<DataBaseService>().EnableGrpcWeb();
-               
+
             });
         }
     }

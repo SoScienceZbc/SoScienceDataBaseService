@@ -58,6 +58,7 @@ message D_Project{
     string lastedited = 4;
     string endDate = 5;
     repeated D_Document documents = 6;
+    int32 ProjectThemeID = 7;
 }
 // document
 message D_Document{

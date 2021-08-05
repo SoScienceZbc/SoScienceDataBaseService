@@ -11,7 +11,7 @@ namespace DatabaseDocomentService.Services
 {
     public class DataBaseService : GrpcDatabaseProject.GrpcDatabaseProjectBase
     {
-        DataBaseManager dbm = new DataBaseManager("192.168.0.220");
+        DataBaseManager dbm = new DataBaseManager("localhost");
         #region Logger
         //private readonly ILogger<DataBaseService> _logger;
         public DataBaseService()

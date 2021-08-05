@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Data;
 using System.Security.Cryptography;
 using DatabaseService_Grpc;
@@ -20,12 +20,12 @@ namespace SoScienceDataServer
         private SHA256 hashing;
         public DataBaseManager(string db)
         {
-            Config = new ConfigurationBuilder().AddJsonFile(getRootPath("AppCode.json")).Build();
+            Config = new ConfigurationBuilder().AddJsonFile("/home/soscienceadmin/Services/AppCode.json").Build();
 
             con =
-                $"Server={db};Database={Config.GetSection("DbConnectionConfig")["Database"]};" +
-                $"User Id={Config.GetSection("DbConnectionConfig")["User Id"]};" +
-                $"Password={Config.GetSection("DbConnectionConfig")["Password"]}";
+                $"SERVER={db};DATABASE={Config.GetSection("DbConnectionConfig")["Database"]};" +
+                $"UID={Config.GetSection("DbConnectionConfig")["User Id"]};" +
+                $"PASSWORD={Config.GetSection("DbConnectionConfig")["Password"]}";
             hashing = SHA256.Create();
         }
 
@@ -44,21 +44,22 @@ namespace SoScienceDataServer
         #region project
         public int AddProject(string username, D_Project project)
         {
+            Console.WriteLine(project);
             int id = 0;
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPInsertProject", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertProject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.Add("@username", SqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
-                    cmd.Parameters.Add("@name", SqlDbType.VarChar).Value = project.Name;
-                    cmd.Parameters.Add("@completed", SqlDbType.Bit).Value = project.Completed;
-                    cmd.Parameters.Add("@lastEdited", SqlDbType.DateTime).Value = project.Lastedited;
-                    cmd.Parameters.Add("@endDate", SqlDbType.DateTime).Value = project.EndDate;
+                    Console.WriteLine(Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username))));
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = project.Name;
+                    cmd.Parameters.Add("@completed", MySqlDbType.Bit).Value = project.Completed;
+                    cmd.Parameters.Add("@lastEdited", MySqlDbType.DateTime).Value = DateTime.Parse(project.Lastedited);
+                    cmd.Parameters.Add("@ProjectThemeID", MySqlDbType.Int32).Value = project.ProjectThemeID;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         id = reader.GetInt32(0);
@@ -73,20 +74,20 @@ namespace SoScienceDataServer
         public int EditProject(D_Project project)
         {
             int id = 0;
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPUpdateProject", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPUpdateProject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     //@id int, @name nvarchar(255), @completed BIT
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = project.Id;
-                    cmd.Parameters.Add("@name", SqlDbType.VarChar).Value = project.Name;
-                    cmd.Parameters.Add("@completed", SqlDbType.Bit).Value = project.Completed;
-                    cmd.Parameters.Add("@lastEdited", SqlDbType.DateTime).Value = project.Lastedited;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = project.Id;
+                    cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = project.Name;
+                    cmd.Parameters.Add("@completed", MySqlDbType.Bit).Value = project.Completed;
+                    cmd.Parameters.Add("@lastEdited", MySqlDbType.DateTime).Value = project.Lastedited;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         id = reader.GetInt32("ID");
@@ -101,20 +102,20 @@ namespace SoScienceDataServer
         public D_Project GetProject(int id, string username)
         {
             D_Project project = null;
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPGetProject", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPGetProject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
-                    cmd.Parameters.Add("@username", SqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        project = new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = reader.GetDateTime("EndDate").ToString() };
+                        project = new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = GetProjectEndDate(reader.GetInt32("ProjectThemeID")) };
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -128,6 +129,37 @@ namespace SoScienceDataServer
             }
             return project;
         }
+
+        /// <summary>
+        /// Get's the Project's Date to Deletion from Project Theme
+        /// And Inputs it as Project EndDate
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private string GetProjectEndDate(int id)
+        {
+            string endDate = "";
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPGetProjectTheme", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    
+
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        endDate = reader.GetDateTime("Enddate").ToString();
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return endDate;
+        }
         /// <summary>
         /// deletes a project in the database
         /// </summary>
@@ -136,17 +168,17 @@ namespace SoScienceDataServer
         /// <returns></returns>
         public int RemoveProject(int id, string username)
         {
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPDeleteProject", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPDeleteProject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@username", SqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         id = reader.GetInt32("ID");
@@ -160,20 +192,20 @@ namespace SoScienceDataServer
         public List<D_Project> GetProjects(string user)
         {
             List<D_Project> projects = new List<D_Project>();
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPGetProjects", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPGetProjects", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     //@id int, @name nvarchar(255), @completed BIT
-                    cmd.Parameters.Add("@username", SqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(user)));
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(user)));
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        projects.Add(new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = reader.GetDateTime("EndDate").ToString() });
+                        projects.Add(new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = GetProjectEndDate(reader.GetInt32("ProjectThemeID")) });
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -185,17 +217,17 @@ namespace SoScienceDataServer
         public List<D_Document> GetDocuments(int id)
         {
             List<D_Document> documents = new List<D_Document>();
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPGetDocumentsSimple", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPGetDocumentsSimple", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     //@id int, @name nvarchar(255), @completed BIT
-                    cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = id;
+                    cmd.Parameters.Add("@id", MySqlDbType.VarChar).Value = id;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         documents.Add(new D_Document
@@ -213,15 +245,15 @@ namespace SoScienceDataServer
                 {
 
                     con.Close();
-                    using (SqlCommand cmd = new SqlCommand("SPGetCompletedParts", con))
+                    using (MySqlCommand cmd = new MySqlCommand("SPGetCompletedParts", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         //@id int, @name nvarchar(255), @completed BIT
-                        cmd.Parameters.Add("@id", SqlDbType.VarChar).Value = documents[i].ID;
+                        cmd.Parameters.Add("@id", MySqlDbType.VarChar).Value = documents[i].ID;
 
                         con.Open();
-                        SqlDataReader reader = cmd.ExecuteReader();
+                        MySqlDataReader reader = cmd.ExecuteReader();
                         while (reader.Read())
                         {
                             documents[i].Completed.Add(reader.GetString("Title"));
@@ -239,18 +271,18 @@ namespace SoScienceDataServer
         public int AddDocument(D_Document document)
         {
             int id = 0;
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPInsertDocument", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertDocument", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = document.ProjectID;
-                    cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = document.Title;
-                    cmd.Parameters.Add("@data", SqlDbType.Text).Value = document.Data;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = document.ProjectID;
+                    cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = document.Title;
+                    cmd.Parameters.Add("@data", MySqlDbType.Text).Value = document.Data;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         id = Convert.ToInt32(reader.GetDecimal(0));
@@ -261,12 +293,12 @@ namespace SoScienceDataServer
                 foreach (string item in document.Completed)
                 {
 
-                    using (SqlCommand cmd = new SqlCommand("SPInsertCompleted", con))
+                    using (MySqlCommand cmd = new MySqlCommand("SPInsertCompleted", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        cmd.Parameters.Add("@did", SqlDbType.Int).Value = id;
-                        cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = item;
+                        cmd.Parameters.Add("@did", MySqlDbType.Int32).Value = id;
+                        cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = item;
 
                         cmd.ExecuteNonQuery();
                         cmd.Dispose();
@@ -279,18 +311,18 @@ namespace SoScienceDataServer
         public int UpdateDocument(D_Document document)
         {
             int did = 0;
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPUpdateDocument", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPUpdateDocument", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = document.ID;
-                    cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = document.Title;
-                    cmd.Parameters.Add("@data", SqlDbType.Text).Value = document.Data;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = document.ID;
+                    cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = document.Title;
+                    cmd.Parameters.Add("@data", MySqlDbType.Text).Value = document.Data;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         did = reader.GetInt32(0);
@@ -299,10 +331,10 @@ namespace SoScienceDataServer
                     cmd.Dispose();
                 }
 
-                using (SqlCommand cmd = new SqlCommand("SPClearCompleted", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPClearCompleted", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@did", SqlDbType.Int).Value = did;
+                    cmd.Parameters.Add("@did", MySqlDbType.Int32).Value = did;
 
                     cmd.ExecuteNonQuery();
                     cmd.Dispose();
@@ -310,12 +342,12 @@ namespace SoScienceDataServer
                 foreach (string item in document.Completed)
                 {
 
-                    using (SqlCommand cmd = new SqlCommand("SPInsertCompleted", con))
+                    using (MySqlCommand cmd = new MySqlCommand("SPInsertCompleted", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        cmd.Parameters.Add("@did", SqlDbType.Int).Value = did;
-                        cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = item;
+                        cmd.Parameters.Add("@did", MySqlDbType.Int32).Value = did;
+                        cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = item;
 
                         cmd.ExecuteNonQuery();
                         cmd.Dispose();
@@ -328,17 +360,17 @@ namespace SoScienceDataServer
         public D_Document GetDocument(int id)
         {
             D_Document document = null;
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPGetDocument", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPGetDocument", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     //@id int, @name nvarchar(255), @completed BIT
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         document = new D_Document
@@ -354,15 +386,15 @@ namespace SoScienceDataServer
                 }
                 if (document != null)
                 {
-                    using (SqlCommand cmd = new SqlCommand("SPGetCompletedParts", con))
+                    using (MySqlCommand cmd = new MySqlCommand("SPGetCompletedParts", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         //@id int, @name nvarchar(255), @completed BIT
-                        cmd.Parameters.Add("@id", SqlDbType.Int).Value = document.ID;
+                        cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = document.ID;
 
 
-                        SqlDataReader reader = cmd.ExecuteReader();
+                        MySqlDataReader reader = cmd.ExecuteReader();
                         while (reader.Read())
                         {
                             document.Completed.Add(reader.GetString("title"));
@@ -378,14 +410,14 @@ namespace SoScienceDataServer
 
         public int RemoveDocument(int documentId, int projectId)
         {
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPDeleteDocument", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPDeleteDocument", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = documentId;
-                    cmd.Parameters.Add("@pid", SqlDbType.Int).Value = projectId;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = documentId;
+                    cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = projectId;
 
                     con.Open();
                     cmd.ExecuteNonQuery();
@@ -398,19 +430,19 @@ namespace SoScienceDataServer
         #region remoteFile
         public intger AddRemoteFile(D_RemoteFile remoteFile)
         {
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPInsertRFile", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertRFile", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@pid", SqlDbType.Int).Value = remoteFile.ProjectID;
-                    cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = remoteFile.Title;
-                    cmd.Parameters.Add("@type", SqlDbType.VarChar).Value = remoteFile.Type;
-                    cmd.Parameters.Add("@path", SqlDbType.VarChar).Value = remoteFile.Path;
+                    cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = remoteFile.ProjectID;
+                    cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = remoteFile.Title;
+                    cmd.Parameters.Add("@type", MySqlDbType.VarChar).Value = remoteFile.Type;
+                    cmd.Parameters.Add("@path", MySqlDbType.VarChar).Value = remoteFile.Path;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         remoteFile.ID = Convert.ToInt32(reader.GetDecimal(0));
@@ -426,16 +458,16 @@ namespace SoScienceDataServer
         public D_RemoteFile GetRemoteFile(int id)
         {
             D_RemoteFile remoteFile = new D_RemoteFile();
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPGetRFile", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPGetRFile", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         remoteFile.ID = reader.GetInt32("ID");
@@ -453,17 +485,17 @@ namespace SoScienceDataServer
 
         public D_RemoteFile UpdateRemoteFile(D_RemoteFile remoteFile)
         {
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPUpdateRFile", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPUpdateRFile", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = remoteFile.ID;
-                    cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = remoteFile.Title;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = remoteFile.ID;
+                    cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = remoteFile.Title;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         remoteFile.ID = reader.GetInt32("ID");
@@ -477,17 +509,17 @@ namespace SoScienceDataServer
         public int RemoveRemoteFile(int RemoteFileId, int projectId)
         {
             int id = 0;
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPDeleteRFile", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPDeleteRFile", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@id", SqlDbType.Int).Value = RemoteFileId;
-                    cmd.Parameters.Add("@pid", SqlDbType.Int).Value = projectId;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = RemoteFileId;
+                    cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = projectId;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         id = reader.GetInt32("ID");
@@ -502,17 +534,17 @@ namespace SoScienceDataServer
         public List<D_Document> GetRemoteFiles(int id)
         {
             List<D_Document> files = new List<D_Document>();
-            using (SqlConnection con = new SqlConnection(this.con))
+            using (MySqlConnection con = new MySqlConnection(this.con))
             {
-                using (SqlCommand cmd = new SqlCommand("SPGetRFiles", con))
+                using (MySqlCommand cmd = new MySqlCommand("SPGetRFiles", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     //@id int, @name nvarchar(255), @completed BIT
-                    cmd.Parameters.Add("@pid", SqlDbType.Int).Value = id;
+                    cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = id;
 
                     con.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
                         //ID,Title,ProjectID,Type

@@ -84,7 +84,7 @@ namespace SoScienceDataServer
                     cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = project.Id;
                     cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = project.Name;
                     cmd.Parameters.Add("@completed", MySqlDbType.Bit).Value = project.Completed;
-                    cmd.Parameters.Add("@lastEdited", MySqlDbType.DateTime).Value = project.Lastedited;
+                    
 
                     con.Open();
                     MySqlDataReader reader = cmd.ExecuteReader();

@@ -124,7 +124,25 @@ namespace DatabaseDocomentService.Services
             return Task.FromResult(new D_RemoteFiles());
         }
         #endregion
-
+        #region Teacher
+        public override Task<D_Teacher> CheckAndInsertTeacher(D_Teacher request, ServerCallContext context)
+        {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
+            int count = dbm.CheckTeacher(request.Username);
+            if (count <= 0)
+            {
+                if (string.IsNullOrEmpty(request.School))
+                {
+                    request.ID = dbm.AddTeacher(request.Username);
+                }
+                else
+                {
+                    request.ID = dbm.AddTeacher(request.Username, request.School);
+                }
+            }
+            return Task.FromResult(request);
+        }
+        #endregion
         #region ProtobufConvert
         #endregion
     }

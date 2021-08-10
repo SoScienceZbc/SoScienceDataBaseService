@@ -44,14 +44,12 @@ namespace SoScienceDataServer
         #region project
         public int AddProject(string username, D_Project project)
         {
-            Console.WriteLine(project);
             int id = 0;
             using (MySqlConnection con = new MySqlConnection(this.con))
             {
                 using (MySqlCommand cmd = new MySqlCommand("SPInsertProject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    Console.WriteLine(Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username))));
                     cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
                     cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = project.Name;
                     cmd.Parameters.Add("@completed", MySqlDbType.Bit).Value = project.Completed;
@@ -557,5 +555,54 @@ namespace SoScienceDataServer
             return files;
         }
         #endregion
+        #region Teacher
+        public int CheckTeacher(string username)
+        {
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPCheckTeacher", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
+
+        public int AddTeacher(string username, string school = "ZBC Slagelse")
+        {
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertTeacher", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    cmd.Parameters.Add("@schoolname", MySqlDbType.VarChar).Value = school;
+
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
+        #endregion
+
     }
 }

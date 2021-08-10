@@ -24,6 +24,8 @@ rpc GetRemoteFile(UserDbInfomation) returns (D_RemoteFile);
 rpc UpdateRemoteFile(D_RemoteFile) returns (D_RemoteFile);
 rpc RemoveRemoteFile(UserDbInfomation) returns (intger);
 rpc GetRemoteFiles(UserDbInfomation) returns (D_RemoteFiles);
+// Teacher
+rpc CheckAndInsertTeacher(D_Teacher) returns (D_Teacher);
 }
 
 message UserDbInfomation{
@@ -77,4 +79,10 @@ message D_RemoteFile{
      string type = 3;
      int32 projectID = 4;
      string path = 5;
+}
+// Teacher
+message D_Teacher{
+     int32 ID = 1;
+     string Username = 2;
+     string School = 3;
 }

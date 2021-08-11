@@ -26,6 +26,9 @@ rpc RemoveRemoteFile(UserDbInfomation) returns (intger);
 rpc GetRemoteFiles(UserDbInfomation) returns (D_RemoteFiles);
 // Teacher
 rpc CheckAndInsertTeacher(D_Teacher) returns (D_Teacher);
+// Subject
+rpc AddSubject(D_Subject) returns (intger);
+rpc GetSubjects(UserDbInfomation) returns (D_Subjects);
 }
 
 message UserDbInfomation{
@@ -51,6 +54,9 @@ message D_Projects{
 }
 message D_RemoteFiles{
     repeated D_RemoteFile D_RemoteFile = 1;
+}
+message D_Subjects{
+    repeated D_Subject Subject = 1;
 }
 // Project
 message D_Project{
@@ -85,4 +91,9 @@ message D_Teacher{
      int32 ID = 1;
      string Username = 2;
      string School = 3;
+}
+// Subject
+message D_Subject {
+    UserDbInfomation user = 1;
+    string name = 2;
 }

@@ -162,5 +162,13 @@ namespace DatabaseDocomentService.Services
             return Task.FromResult(temp);
         }
         #endregion
+        #region Project Theme
+        public override Task<intger> AddProjectTheme(D_ProjectTheme request, ServerCallContext context)
+        {
+
+            var temp = new intger { Number = dbm.AddProjectTheme(request.Name, request.EndDate, request.Teacher, request.SubjectID) };
+            return Task.FromResult(temp);
+        }
+        #endregion
     }
 }

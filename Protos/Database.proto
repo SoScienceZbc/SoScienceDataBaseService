@@ -32,7 +32,14 @@ rpc GetSubjects(UserDbInfomation) returns (D_Subjects);
 // ProjectTheme
 rpc AddProjectTheme(D_ProjectTheme) returns (intger);
 rpc GetProjectThemes(UserDbInfomation) returns (D_ProjectThemes);
+rpc GetProjectThemesFromSubject(ThemeFromSubject) returns (D_ProjectThemes);
 }
+
+message ThemeFromSubject{
+    UserDbInfomation user = 1;
+    D_Subject subject = 2;
+}
+
 
 message UserDbInfomation{
     int32 ID = 1;

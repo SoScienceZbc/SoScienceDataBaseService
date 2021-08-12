@@ -653,6 +653,33 @@ namespace SoScienceDataServer
         }
 
         #endregion
+        #region Project Theme
+        public int AddProjectTheme(string name, string endDate, string teacherName, int subjectID)
+        {
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertProjectTheme", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ProjectName", MySqlDbType.VarChar).Value = name;
+                    cmd.Parameters.Add("@ProjectThemeEndDate", MySqlDbType.DateTime).Value = DateTime.Parse(endDate);
+                    cmd.Parameters.Add("@TeacherName", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(teacherName)));
+                    cmd.Parameters.Add("@SubjectId", MySqlDbType.Int32).Value = subjectID;
 
+
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
+        #endregion
     }
 }

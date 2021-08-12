@@ -111,6 +111,6 @@ message D_ProjectTheme {
     string name = 2;
     string endDate = 3;
     string lastEdited = 4;
-    int32 teacherID = 5;
+    string Teacher = 5;
     int32 subjectID = 6;
 }

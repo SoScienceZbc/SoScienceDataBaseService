@@ -29,6 +29,9 @@ rpc CheckAndInsertTeacher(D_Teacher) returns (D_Teacher);
 // Subject
 rpc AddSubject(D_Subject) returns (intger);
 rpc GetSubjects(UserDbInfomation) returns (D_Subjects);
+// ProjectTheme
+rpc AddProjectTheme(D_ProjectTheme) returns (intger);
+rpc GetProjectThemes(UserDbInfomation) returns (D_ProjectThemes);
 }
 
 message UserDbInfomation{
@@ -57,6 +60,9 @@ message D_RemoteFiles{
 }
 message D_Subjects{
     repeated D_Subject Subject = 1;
+}
+message D_ProjectThemes {
+    repeated D_ProjectTheme ProjectTheme = 1;
 }
 // Project
 message D_Project{
@@ -96,4 +102,15 @@ message D_Teacher{
 message D_Subject {
     UserDbInfomation user = 1;
     string name = 2;
+    int32 ID = 3;
+}
+
+// Project Theme
+message D_ProjectTheme {
+    int32 ID = 1;
+    string name = 2;
+    string endDate = 3;
+    string lastEdited = 4;
+    int32 teacherID = 5;
+    int32 subjectID = 6;
 }

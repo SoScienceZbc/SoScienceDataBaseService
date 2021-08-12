@@ -151,6 +151,16 @@ namespace DatabaseDocomentService.Services
             var temp = new intger { Number = dbm.AddSubject(request.Name) };
             return Task.FromResult(temp);
         }
+        public override Task<D_Subjects> GetSubjects(UserDbInfomation request, ServerCallContext context)
+        {
+            List<D_Subject> subjects = dbm.GetSubjects();
+            var temp = new D_Subjects();
+            foreach (var item in subjects)
+            {
+                temp.Subject.Add(item);
+            }
+            return Task.FromResult(temp);
+        }
         #endregion
     }
 }

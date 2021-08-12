@@ -612,7 +612,7 @@ namespace SoScienceDataServer
                 using (MySqlCommand cmd = new MySqlCommand("SPInsertSubject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = name;
+                    cmd.Parameters.Add("@SName", MySqlDbType.VarChar).Value = name;
                     
 
                     con.Open();
@@ -626,6 +626,30 @@ namespace SoScienceDataServer
                 }
             }
             return id;
+        }
+
+        public List<D_Subject> GetSubjects()
+        {
+            List<D_Subject> subjects = new List<D_Subject>();
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPGetSubjects", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        subjects.Add(new D_Subject() { Name = reader.GetString(1) });
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return subjects;
         }
 
         #endregion

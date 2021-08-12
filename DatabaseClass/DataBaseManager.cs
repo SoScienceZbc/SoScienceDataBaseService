@@ -642,7 +642,7 @@ namespace SoScienceDataServer
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        subjects.Add(new D_Subject() { Name = reader.GetString(1) });
+                        subjects.Add(new D_Subject() { Name = reader.GetString(1), ID = reader.GetInt32(0) });
                         id = reader.GetInt32(0);
                     }
                     reader.Close();

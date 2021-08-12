@@ -145,5 +145,12 @@ namespace DatabaseDocomentService.Services
         #endregion
         #region ProtobufConvert
         #endregion
+        #region Subject
+        public override Task<intger> AddSubject(D_Subject request, ServerCallContext context)
+        {
+            var temp = new intger { Number = dbm.AddSubject(request.Name) };
+            return Task.FromResult(temp);
+        }
+        #endregion
     }
 }

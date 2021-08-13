@@ -605,6 +605,83 @@ namespace SoScienceDataServer
             return id;
         }
         #endregion
+        #region Subject
+        public int AddSubject(string name)
+        {
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertSubject", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@SName", MySqlDbType.VarChar).Value = name;
+                    
 
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
+
+        public List<D_Subject> GetSubjects()
+        {
+            List<D_Subject> subjects = new List<D_Subject>();
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPGetSubjects", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        subjects.Add(new D_Subject() { Name = reader.GetString(1), ID = reader.GetInt32(0) });
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return subjects;
+        }
+
+        #endregion
+        #region Project Theme
+        public int AddProjectTheme(string name, string endDate, string teacherName, int subjectID)
+        {
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertProjectTheme", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ProjectName", MySqlDbType.VarChar).Value = name;
+                    cmd.Parameters.Add("@ProjectThemeEndDate", MySqlDbType.DateTime).Value = DateTime.Parse(endDate);
+                    cmd.Parameters.Add("@TeacherName", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(teacherName)));
+                    cmd.Parameters.Add("@SubjectId", MySqlDbType.Int32).Value = subjectID;
+
+
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
+        #endregion
     }
 }

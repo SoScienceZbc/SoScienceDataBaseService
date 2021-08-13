@@ -145,5 +145,30 @@ namespace DatabaseDocomentService.Services
         #endregion
         #region ProtobufConvert
         #endregion
+        #region Subject
+        public override Task<intger> AddSubject(D_Subject request, ServerCallContext context)
+        {
+            var temp = new intger { Number = dbm.AddSubject(request.Name) };
+            return Task.FromResult(temp);
+        }
+        public override Task<D_Subjects> GetSubjects(UserDbInfomation request, ServerCallContext context)
+        {
+            List<D_Subject> subjects = dbm.GetSubjects();
+            var temp = new D_Subjects();
+            foreach (var item in subjects)
+            {
+                temp.Subject.Add(item);
+            }
+            return Task.FromResult(temp);
+        }
+        #endregion
+        #region Project Theme
+        public override Task<intger> AddProjectTheme(D_ProjectTheme request, ServerCallContext context)
+        {
+
+            var temp = new intger { Number = dbm.AddProjectTheme(request.Name, request.EndDate, request.Teacher, request.SubjectID) };
+            return Task.FromResult(temp);
+        }
+        #endregion
     }
 }

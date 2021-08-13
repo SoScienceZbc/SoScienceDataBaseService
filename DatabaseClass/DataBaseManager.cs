@@ -658,6 +658,7 @@ namespace SoScienceDataServer
         #region Project Theme
         public int AddProjectTheme(string name, string endDate, string teacherName, int subjectID)
         {
+            CultureInfo provider = CultureInfo.InvariantCulture;
             int id = 0;
             using (MySqlConnection con = new MySqlConnection(this.con))
             {
@@ -665,7 +666,7 @@ namespace SoScienceDataServer
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@ProjectName", MySqlDbType.VarChar).Value = name;
-                    cmd.Parameters.Add("@ProjectThemeEndDate", MySqlDbType.DateTime).Value = DateTime.Parse(endDate);
+                    cmd.Parameters.Add("@ProjectThemeEndDate", MySqlDbType.DateTime).Value = DateTime.ParseExact(endDate, "dd/MM/yyyy HH:mm:ss", provider);
                     cmd.Parameters.Add("@TeacherName", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(teacherName)));
                     cmd.Parameters.Add("@SubjectId", MySqlDbType.Int32).Value = subjectID;
 

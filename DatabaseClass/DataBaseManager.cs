@@ -55,7 +55,7 @@ namespace SoScienceDataServer
                     cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
                     cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = project.Name;
                     cmd.Parameters.Add("@completed", MySqlDbType.Bit).Value = project.Completed;
-                    cmd.Parameters.Add("@lastEdited", MySqlDbType.DateTime).Value = DateTime.ParseExact(project.Lastedited,"dd/MM/yyyy HH:mm:ss", provider);
+                    cmd.Parameters.Add("@lastEdited", MySqlDbType.DateTime).Value = new DateTime();
                     cmd.Parameters.Add("@ProjectThemeID", MySqlDbType.Int32).Value = project.ProjectThemeID;
 
                     con.Open();

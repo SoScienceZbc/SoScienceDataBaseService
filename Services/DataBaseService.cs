@@ -11,16 +11,20 @@ namespace DatabaseDocomentService.Services
 {
     public class DataBaseService : GrpcDatabaseProject.GrpcDatabaseProjectBase
     {
+#if DEBUG
+        DataBaseManager dbm = new DataBaseManager("192.168.0.220");
+#else
         DataBaseManager dbm = new DataBaseManager("localhost");
-        #region Logger
+#endif
+#region Logger
         //private readonly ILogger<DataBaseService> _logger;
         public DataBaseService()
         {
             //_logger = logger; ILogger<DataBaseService> logger
         }
-        #endregion
+#endregion
 
-        #region Project
+#region Project
         public override Task<D_Project> GetProject(UserDbInfomation infomation, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
@@ -65,8 +69,8 @@ namespace DatabaseDocomentService.Services
             return Task.FromResult(temp);
         }
 
-        #endregion
-        #region Docoment
+#endregion
+#region Docoment
         public override Task<D_Documents> GetDocuments(UserDbInfomation infomation, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
@@ -96,8 +100,8 @@ namespace DatabaseDocomentService.Services
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             return Task.FromResult(new intger { Number = dbm.RemoveDocument(infomation.Project.Documents[0].ID, infomation.Project.Id) });
         }
-        #endregion
-        #region Remote
+#endregion
+#region Remote
         public override Task<intger> AddRemoteFile(D_RemoteFile infomation, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
@@ -123,8 +127,8 @@ namespace DatabaseDocomentService.Services
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             return Task.FromResult(new D_RemoteFiles());
         }
-        #endregion
-        #region Teacher
+#endregion
+#region Teacher
         public override Task<D_Teacher> CheckAndInsertTeacher(D_Teacher request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
@@ -142,17 +146,17 @@ namespace DatabaseDocomentService.Services
             }
             return Task.FromResult(request);
         }
-        #endregion
-        #region ProtobufConvert
-        #endregion
-        #region Subject
+#endregion
+#region Subject
         public override Task<intger> AddSubject(D_Subject request, ServerCallContext context)
         {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             var temp = new intger { Number = dbm.AddSubject(request.Name) };
             return Task.FromResult(temp);
         }
         public override Task<D_Subjects> GetSubjects(UserDbInfomation request, ServerCallContext context)
         {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             List<D_Subject> subjects = dbm.GetSubjects();
             var temp = new D_Subjects();
             foreach (var item in subjects)
@@ -161,15 +165,17 @@ namespace DatabaseDocomentService.Services
             }
             return Task.FromResult(temp);
         }
-        #endregion
-        #region Project Theme
+#endregion
+#region Project Theme
         public override Task<intger> AddProjectTheme(D_ProjectTheme request, ServerCallContext context)
         {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             var temp = new intger { Number = dbm.AddProjectTheme(request.Name, request.EndDate, request.Teacher, request.SubjectID) };
             return Task.FromResult(temp);
         }
         public override Task<D_ProjectThemes> GetProjectThemesFromSubject(ThemeFromSubject request, ServerCallContext context)
         {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             List<D_ProjectTheme> themes = dbm.GetProjectThemesFromSubject(request.Subject);
             var temp = new D_ProjectThemes();
             foreach (var item in themes)
@@ -180,14 +186,27 @@ namespace DatabaseDocomentService.Services
         }
         public override Task<D_ProjectThemes> GetProjectThemes(UserDbInfomation request, ServerCallContext context)
         {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             List<D_ProjectTheme> themes = dbm.GetProjectThemes(request.DbName);
             var temp = new D_ProjectThemes();
             foreach (var item in themes)
             {
+                item.Projects = dbm.GetProjectsFromProjectTheme(item.ID);
                 temp.ProjectTheme.Add(item);
             }
+            Console.WriteLine(temp.ToString());
             return Task.FromResult(temp);
         }
-        #endregion
+        public override Task<intger> AddProjectThemeCoTeacher(ProjectThemeUserInfomation request, ServerCallContext context)
+        {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
+            return Task.FromResult(new intger() { Number = dbm.AddProjectThemeCoTeacher(request.Theme.ID, request.Username) });
+        }
+        public override Task<intger> RemoveProjectTheme(ProjectThemeUserInfomation request, ServerCallContext context)
+        {
+            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
+            return Task.FromResult(new intger() { Number = dbm.RemoveProjectTheme(request.Theme.ID) });
+        }
+#endregion
     }
 }

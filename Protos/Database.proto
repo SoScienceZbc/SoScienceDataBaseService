@@ -33,6 +33,8 @@ rpc GetSubjects(UserDbInfomation) returns (D_Subjects);
 rpc AddProjectTheme(D_ProjectTheme) returns (intger);
 rpc GetProjectThemes(UserDbInfomation) returns (D_ProjectThemes);
 rpc GetProjectThemesFromSubject(ThemeFromSubject) returns (D_ProjectThemes);
+rpc RemoveProjectTheme(ProjectThemeUserInfomation) returns (intger);
+rpc AddProjectThemeCoTeacher(ProjectThemeUserInfomation) returns (intger);
 }
 
 message ThemeFromSubject{
@@ -50,6 +52,13 @@ message ProjectUserInfomation{
 
     UserDbInfomation user=1;
     D_Project project = 2;
+}
+
+message ProjectThemeUserInfomation{
+
+    UserDbInfomation user = 1;
+    D_ProjectTheme theme = 2;
+    string username = 3;
 }
 
 message intger{
@@ -80,6 +89,7 @@ message D_Project{
     string endDate = 5;
     repeated D_Document documents = 6;
     int32 ProjectThemeID = 7;
+    bool CloseToDeletion = 8;
 }
 // document
 message D_Document{
@@ -120,4 +130,5 @@ message D_ProjectTheme {
     string lastEdited = 4;
     string Teacher = 5;
     int32 subjectID = 6;
+    D_Projects projects = 7;
 }

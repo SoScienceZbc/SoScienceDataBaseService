@@ -21,7 +21,11 @@ namespace SoScienceDataServer
         private SHA256 hashing;
         public DataBaseManager(string db)
         {
+#if DEBUG
+            Config = new ConfigurationBuilder().AddJsonFile("./AppCode.json").Build();
+#else
             Config = new ConfigurationBuilder().AddJsonFile("/home/soscienceadmin/Services/AppCode.json").Build();
+#endif
 
             con =
                 $"SERVER={db};DATABASE={Config.GetSection("DbConnectionConfig")["Database"]};" +
@@ -42,7 +46,7 @@ namespace SoScienceDataServer
         }
 
 
-        #region project
+#region project
         public int AddProject(string username, D_Project project)
         {
             CultureInfo provider = CultureInfo.InvariantCulture;
@@ -129,13 +133,33 @@ namespace SoScienceDataServer
             }
             return project;
         }
-
-        /// <summary>
-        /// Get's the Project's Date to Deletion from Project Theme
-        /// And Inputs it as Project EndDate
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        public D_Projects GetProjectsFromProjectTheme(int id)
+        {
+            D_Projects projects = new D_Projects();
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPGetProjectsFromProjectTheme", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        projects.DProject.Add(new D_Project { 
+                            Id = reader.GetInt32("ID"), 
+                            Name = reader.GetString("name"), 
+                            Completed = reader.GetBoolean("completed"), 
+                            Lastedited = reader.GetDateTime("lastEdited").ToString(), 
+                            EndDate = reader.GetDateTime("EndDate").ToString(), 
+                            CloseToDeletion = reader.GetBoolean("CloseToDeletion") });
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return projects;
+        }
         private string GetProjectEndDate(int id)
         {
             string endDate = "";
@@ -205,7 +229,13 @@ namespace SoScienceDataServer
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        projects.Add(new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = GetProjectEndDate(reader.GetInt32("ProjectThemeID")) });
+                        projects.Add(new D_Project { 
+                            Id = reader.GetInt32("ID"), 
+                            Name = reader.GetString("name"), 
+                            Completed = reader.GetBoolean("completed"), 
+                            Lastedited = reader.GetDateTime("lastEdited").ToString(), 
+                            EndDate = reader.GetDateTime("EndDate").ToString(), 
+                            CloseToDeletion = reader.GetBoolean("CloseToDeletion") });
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -266,8 +296,8 @@ namespace SoScienceDataServer
             }
             return documents;
         }
-        #endregion
-        #region document
+#endregion
+#region document
         public int AddDocument(D_Document document)
         {
             int id = 0;
@@ -426,8 +456,8 @@ namespace SoScienceDataServer
             }
             return documentId;
         }
-        #endregion
-        #region remoteFile
+#endregion
+#region remoteFile
         public intger AddRemoteFile(D_RemoteFile remoteFile)
         {
             using (MySqlConnection con = new MySqlConnection(this.con))
@@ -556,8 +586,8 @@ namespace SoScienceDataServer
             }
             return files;
         }
-        #endregion
-        #region Teacher
+#endregion
+#region Teacher
         public int CheckTeacher(string username)
         {
             int id = 0;
@@ -604,8 +634,8 @@ namespace SoScienceDataServer
             }
             return id;
         }
-        #endregion
-        #region Subject
+#endregion
+#region Subject
         public int AddSubject(string name)
         {
             int id = 0;
@@ -654,8 +684,8 @@ namespace SoScienceDataServer
             return subjects;
         }
 
-        #endregion
-        #region Project Theme
+#endregion
+#region Project Theme
         public int AddProjectTheme(string name, string endDate, string teacherName, int subjectID)
         {
             CultureInfo provider = CultureInfo.InvariantCulture;
@@ -727,6 +757,39 @@ namespace SoScienceDataServer
             }
             return themes;
         }
-        #endregion
+        public int RemoveProjectTheme(int id)
+        {
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPDeleteProjectTheme", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+
+        }
+        public int AddProjectThemeCoTeacher(int id, string username)
+        {
+
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertCoTeacher", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    cmd.Parameters.Add("@teacher", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
+#endregion
     }
 }

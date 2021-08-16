@@ -178,6 +178,16 @@ namespace DatabaseDocomentService.Services
             }
             return Task.FromResult(temp);
         }
+        public override Task<D_ProjectThemes> GetProjectThemes(UserDbInfomation request, ServerCallContext context)
+        {
+            List<D_ProjectTheme> themes = dbm.GetProjectThemes(request.DbName);
+            var temp = new D_ProjectThemes();
+            foreach (var item in themes)
+            {
+                temp.ProjectTheme.Add(item);
+            }
+            return Task.FromResult(temp);
+        }
         #endregion
     }
 }

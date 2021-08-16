@@ -680,6 +680,29 @@ namespace SoScienceDataServer
             }
             return id;
         }
+        public List<D_ProjectTheme> GetProjectThemesFromSubject(D_Subject subject)
+        {
+            List<D_ProjectTheme> themes = new List<D_ProjectTheme>();
+            int id = 0;
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPGetProjectThemeFromSubject", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = subject.ID;
+                    con.Open();
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        themes.Add(new D_ProjectTheme() { Name = reader.GetString(1), ID = reader.GetInt32(0) });
+                        id = reader.GetInt32(0);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+                }
+            }
+            return themes;
+        }
         #endregion
     }
 }

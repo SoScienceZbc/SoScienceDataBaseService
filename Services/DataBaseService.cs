@@ -169,6 +169,16 @@ namespace DatabaseDocomentService.Services
             var temp = new intger { Number = dbm.AddProjectTheme(request.Name, request.EndDate, request.Teacher, request.SubjectID) };
             return Task.FromResult(temp);
         }
+        public override Task<D_ProjectThemes> GetProjectThemesFromSubject(ThemeFromSubject request, ServerCallContext context)
+        {
+            List<D_ProjectTheme> themes = dbm.GetProjectThemesFromSubject(request.Subject);
+            var temp = new D_ProjectThemes();
+            foreach (var item in themes)
+            {
+                temp.ProjectTheme.Add(item);
+            }
+            return Task.FromResult(temp);
+        }
         #endregion
     }
 }

@@ -714,7 +714,7 @@ namespace SoScienceDataServer
                 using (MySqlCommand cmd = new MySqlCommand("SPGetProjectTheme", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(teacherName)));
+                    cmd.Parameters.Add("@teacher", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(teacherName)));
                     con.Open();
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())

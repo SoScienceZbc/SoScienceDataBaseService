@@ -698,7 +698,7 @@ namespace SoScienceDataServer
                     cmd.Parameters.Add("@ProjectName", MySqlDbType.VarChar).Value = name;
                     cmd.Parameters.Add("@ProjectThemeEndDate", MySqlDbType.DateTime).Value = DateTime.ParseExact(endDate, "dd/MM/yyyy HH:mm:ss", provider);
                     cmd.Parameters.Add("@TeacherName", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(teacherName)));
-                    cmd.Parameters.Add("@Subject", MySqlDbType.VarChar).Value = subject;
+                    cmd.Parameters.Add("@SubjectName", MySqlDbType.VarChar).Value = subject;
 
 
                     con.Open();
@@ -722,7 +722,7 @@ namespace SoScienceDataServer
                 using (MySqlCommand cmd = new MySqlCommand("SPGetProjectThemeFromSubject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@subject", MySqlDbType.VarChar).Value = subject.Name;
+                    cmd.Parameters.Add("@SubjectName", MySqlDbType.VarChar).Value = subject.Name;
                     con.Open();
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())

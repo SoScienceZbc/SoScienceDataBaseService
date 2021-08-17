@@ -790,6 +790,22 @@ namespace SoScienceDataServer
             }
             return id;
         }
+        public int RemoveProjectThemeCoTeacher(string username, int id)
+        {
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using(MySqlCommand cmd = new MySqlCommand("SPDeleteProjectThemeCoTeacher", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    cmd.Parameters.Add("@teacher", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
 #endregion
     }
 }

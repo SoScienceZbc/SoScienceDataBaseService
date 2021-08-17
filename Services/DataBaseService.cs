@@ -206,6 +206,11 @@ namespace DatabaseDocomentService.Services
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             return Task.FromResult(new intger() { Number = dbm.RemoveProjectTheme(request.Theme.ID) });
         }
-#endregion
+        public override Task<intger> RemoveProjectThemeCoTeacher(ProjectThemeUserInfomation request, ServerCallContext context)
+        {
+            Console.WriteLine($"host:{context.Host}\nMethid: {context.Method}");
+            return Task.FromResult(new intger() { Number = dbm.RemoveProjectThemeCoTeacher(request.Username, request.Theme.ID) });
+        }
+        #endregion
     }
 }

@@ -194,7 +194,6 @@ namespace DatabaseDocomentService.Services
                 item.Projects = dbm.GetProjectsFromProjectTheme(item.ID);
                 temp.ProjectTheme.Add(item);
             }
-            Console.WriteLine(temp.ToString());
             return Task.FromResult(temp);
         }
         public override Task<intger> AddProjectThemeCoTeacher(ProjectThemeUserInfomation request, ServerCallContext context)

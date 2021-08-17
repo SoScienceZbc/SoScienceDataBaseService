@@ -686,7 +686,7 @@ namespace SoScienceDataServer
 
 #endregion
 #region Project Theme
-        public int AddProjectTheme(string name, string endDate, string teacherName, int subjectID)
+        public int AddProjectTheme(string name, string endDate, string teacherName, string subject)
         {
             CultureInfo provider = CultureInfo.InvariantCulture;
             int id = 0;
@@ -698,7 +698,7 @@ namespace SoScienceDataServer
                     cmd.Parameters.Add("@ProjectName", MySqlDbType.VarChar).Value = name;
                     cmd.Parameters.Add("@ProjectThemeEndDate", MySqlDbType.DateTime).Value = DateTime.ParseExact(endDate, "dd/MM/yyyy HH:mm:ss", provider);
                     cmd.Parameters.Add("@TeacherName", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(teacherName)));
-                    cmd.Parameters.Add("@SubjectId", MySqlDbType.Int32).Value = subjectID;
+                    cmd.Parameters.Add("@Subject", MySqlDbType.VarChar).Value = subject;
 
 
                     con.Open();
@@ -722,7 +722,7 @@ namespace SoScienceDataServer
                 using (MySqlCommand cmd = new MySqlCommand("SPGetProjectThemeFromSubject", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = subject.ID;
+                    cmd.Parameters.Add("@subject", MySqlDbType.VarChar).Value = subject.Name;
                     con.Open();
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
@@ -749,7 +749,7 @@ namespace SoScienceDataServer
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        themes.Add(new D_ProjectTheme() { Name = reader.GetString(1), ID = reader.GetInt32(0), EndDate = reader.GetDateTime(2).ToString("dd/MM/yyyy HH:mm:ss"), LastEdited = reader.GetDateTime(3).ToString("dd/MM/yyyy HH:mm:ss"), SubjectID = reader.GetInt32(4) });
+                        themes.Add(new D_ProjectTheme() { Name = reader.GetString(1), ID = reader.GetInt32(0), EndDate = reader.GetDateTime(2).ToString("dd/MM/yyyy HH:mm:ss"), LastEdited = reader.GetDateTime(3).ToString("dd/MM/yyyy HH:mm:ss"), Subject = reader.GetString(4) });
                     }
                     reader.Close();
                     cmd.Dispose();

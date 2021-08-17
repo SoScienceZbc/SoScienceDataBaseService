@@ -170,7 +170,7 @@ namespace DatabaseDocomentService.Services
         public override Task<intger> AddProjectTheme(D_ProjectTheme request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            var temp = new intger { Number = dbm.AddProjectTheme(request.Name, request.EndDate, request.Teacher, request.SubjectID) };
+            var temp = new intger { Number = dbm.AddProjectTheme(request.Name, request.EndDate, request.Teacher, request.Subject) };
             return Task.FromResult(temp);
         }
         public override Task<D_ProjectThemes> GetProjectThemesFromSubject(ThemeFromSubject request, ServerCallContext context)

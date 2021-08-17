@@ -130,6 +130,6 @@ message D_ProjectTheme {
     string endDate = 3;
     string lastEdited = 4;
     string Teacher = 5;
-    int32 subjectID = 6;
+    string subject = 6;
     D_Projects projects = 7;
 }

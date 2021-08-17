@@ -35,6 +35,7 @@ rpc GetProjectThemes(UserDbInfomation) returns (D_ProjectThemes);
 rpc GetProjectThemesFromSubject(ThemeFromSubject) returns (D_ProjectThemes);
 rpc RemoveProjectTheme(ProjectThemeUserInfomation) returns (intger);
 rpc AddProjectThemeCoTeacher(ProjectThemeUserInfomation) returns (intger);
+rpc RemoveProjectThemeCoTeacher(ProjectThemeUserInfomation) returns (intger);
 }
 
 message ThemeFromSubject{

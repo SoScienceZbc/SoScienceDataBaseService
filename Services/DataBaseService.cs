@@ -44,13 +44,11 @@ namespace DatabaseDocomentService.Services
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             return Task.FromResult(new intger { Number = dbm.EditProject(infomation.Project) });
         }
-
         public override Task<intger> RemoveProject(ProjectUserInfomation infomation, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             return Task.FromResult(new intger { Number = dbm.RemoveProject(infomation.Project.Id, infomation.User.DbName) });
         }
-
         public override Task<D_Projects> GetProjects(UserDbInfomation infomation, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");

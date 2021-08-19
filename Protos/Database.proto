@@ -36,6 +36,8 @@ rpc GetProjectThemesFromSubject(ThemeFromSubject) returns (D_ProjectThemes);
 rpc RemoveProjectTheme(ProjectThemeUserInfomation) returns (intger);
 rpc AddProjectThemeCoTeacher(ProjectThemeUserInfomation) returns (intger);
 rpc RemoveProjectThemeCoTeacher(ProjectThemeUserInfomation) returns (intger);
+rpc AddProjectMember(MemberInformation) returns (intger);
+rpc RemoveProjectMember(MemberInformation) returns (intger);
 }
 
 message ThemeFromSubject{
@@ -43,6 +45,10 @@ message ThemeFromSubject{
     D_Subject subject = 2;
 }
 
+message MemberInformation{
+    UserDbInfomation user = 1;
+    string newMember = 2;
+}
 
 message UserDbInfomation{
     int32 ID = 1;

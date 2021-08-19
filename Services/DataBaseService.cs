@@ -199,17 +199,20 @@ namespace DatabaseDocomentService.Services
         public override Task<intger> AddProjectThemeCoTeacher(ProjectThemeUserInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(new intger() { Number = dbm.AddProjectThemeCoTeacher(request.Theme.ID, request.Username) });
+            intger temp = new intger() { Number = dbm.AddProjectThemeCoTeacher(request.Theme.ID, request.Username) };
+            return Task.FromResult(temp);
         }
         public override Task<intger> RemoveProjectTheme(ProjectThemeUserInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(new intger() { Number = dbm.RemoveProjectTheme(request.Theme.ID) });
+            intger temp = new intger() { Number = dbm.RemoveProjectTheme(request.Theme.ID) };
+            return Task.FromResult(temp);
         }
         public override Task<intger> RemoveProjectThemeCoTeacher(ProjectThemeUserInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"host:{context.Host}\nMethid: {context.Method}");
-            return Task.FromResult(new intger() { Number = dbm.RemoveProjectThemeCoTeacher(request.Username, request.Theme.ID) });
+            intger temp = new intger() { Number = dbm.RemoveProjectThemeCoTeacher(request.Username, request.Theme.ID) };
+            return Task.FromResult(temp);
         }
         #endregion
     }

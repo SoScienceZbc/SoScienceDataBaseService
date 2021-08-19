@@ -68,12 +68,12 @@ namespace DatabaseDocomentService.Services
         }
         public override Task<intger> AddProjectMember(MemberInformation request, ServerCallContext context)
         {
-            var temp = new intger { Number = dbm.AddProjectMember(request.User.ID, request.User.DbName) };
+            var temp = new intger { Number = dbm.AddProjectMember(request.User.ID, request.NewMember) };
             return Task.FromResult(temp);
         }
         public override Task<intger> RemoveProjectMember(MemberInformation request, ServerCallContext context)
         {
-            var temp = new intger { Number = dbm.RemoveProjectMember(request.User.ID, request.User.DbName) };
+            var temp = new intger { Number = dbm.RemoveProjectMember(request.User.ID, request.NewMember) };
             return Task.FromResult(temp);
         }
         #endregion

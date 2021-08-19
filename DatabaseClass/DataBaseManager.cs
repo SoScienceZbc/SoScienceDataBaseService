@@ -341,7 +341,7 @@ namespace SoScienceDataServer
 
                     cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = document.ProjectID;
                     cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = document.Title;
-                    cmd.Parameters.Add("@data", MySqlDbType.Text).Value = document.Data;
+                    cmd.Parameters.Add("@data", MySqlDbType.LongText).Value = document.Data;
 
                     con.Open();
                     MySqlDataReader reader = cmd.ExecuteReader();
@@ -381,7 +381,7 @@ namespace SoScienceDataServer
 
                     cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = document.ID;
                     cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = document.Title;
-                    cmd.Parameters.Add("@data", MySqlDbType.Text).Value = document.Data;
+                    cmd.Parameters.Add("@data", MySqlDbType.LongText).Value = document.Data;
 
                     con.Open();
                     MySqlDataReader reader = cmd.ExecuteReader();

@@ -83,6 +83,8 @@ namespace DatabaseDocomentService.Services
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             var temp = new D_Documents();
             temp.DDocuments.AddRange(dbm.GetDocuments(request.ID));
+            Console.WriteLine(dbm.GetDocuments(request.ID));
+            Console.WriteLine(request.ID);
             return Task.FromResult(temp);
         }
         // documents

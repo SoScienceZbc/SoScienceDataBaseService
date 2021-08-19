@@ -119,7 +119,7 @@ namespace SoScienceDataServer
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        project = new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString(), EndDate = GetProjectEndDate(reader.GetInt32("ProjectThemeID")) };
+                        project = new D_Project { Id = reader.GetInt32("ID"), Name = reader.GetString("name"), Completed = reader.GetBoolean("completed"), Lastedited = reader.GetDateTime("lastEdited").ToString("dd/MM/yyyy HH:mm:ss"), EndDate = GetProjectEndDate(reader.GetInt32("ProjectThemeID")) };
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -150,8 +150,8 @@ namespace SoScienceDataServer
                             Id = reader.GetInt32("ID"), 
                             Name = reader.GetString("name"), 
                             Completed = reader.GetBoolean("completed"), 
-                            Lastedited = reader.GetDateTime("lastEdited").ToString(), 
-                            EndDate = reader.GetDateTime("EndDate").ToString(), 
+                            Lastedited = reader.GetDateTime("lastEdited").ToString("dd/MM/yyyy HH:mm:ss"), 
+                            EndDate = reader.GetDateTime("EndDate").ToString("dd/MM/yyyy HH:mm:ss"), 
                             CloseToDeletion = reader.GetBoolean("CloseToDeletion") });
                     }
                     reader.Close();
@@ -176,7 +176,7 @@ namespace SoScienceDataServer
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        endDate = reader.GetDateTime("Enddate").ToString();
+                        endDate = reader.GetDateTime("Enddate").ToString("dd/MM/yyyy HH:mm:ss");
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -233,8 +233,8 @@ namespace SoScienceDataServer
                             Id = reader.GetInt32("ID"), 
                             Name = reader.GetString("name"), 
                             Completed = reader.GetBoolean("completed"), 
-                            Lastedited = reader.GetDateTime("lastEdited").ToString(), 
-                            EndDate = reader.GetDateTime("EndDate").ToString(), 
+                            Lastedited = reader.GetDateTime("lastEdited").ToString("dd/MM/yyyy HH:mm:ss"), 
+                            EndDate = reader.GetDateTime("EndDate").ToString("dd/MM/yyyy HH:mm:ss"), 
                             CloseToDeletion = reader.GetBoolean("CloseToDeletion") });
                     }
                     reader.Close();

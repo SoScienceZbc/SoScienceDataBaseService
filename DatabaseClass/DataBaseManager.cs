@@ -296,6 +296,38 @@ namespace SoScienceDataServer
             }
             return documents;
         }
+        public int AddProjectMember(int id, string username)
+        {
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPInsertProjectMember", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
+        public int RemoveProjectMember(int id, string username)
+        {
+            using (MySqlConnection con = new MySqlConnection(this.con))
+            {
+                using (MySqlCommand cmd = new MySqlCommand("SPDeleteProjectMember", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    cmd.Dispose();
+                }
+            }
+            return id;
+        }
 #endregion
 #region document
         public int AddDocument(D_Document document)

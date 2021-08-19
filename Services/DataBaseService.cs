@@ -25,34 +25,34 @@ namespace DatabaseDocomentService.Services
 #endregion
 
 #region Project
-        public override Task<D_Project> GetProject(UserDbInfomation infomation, ServerCallContext context)
+        public override Task<D_Project> GetProject(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            D_Project DData = dbm.GetProject(infomation.ID, infomation.DbName);
+            D_Project DData = dbm.GetProject(request.ID, request.DbName);
             Console.WriteLine(DData.Name);
             return Task.FromResult(DData);
         }
-        public override Task<intger> AddProject(ProjectUserInfomation infomation, ServerCallContext context)
+        public override Task<intger> AddProject(ProjectUserInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
 
-            var temp = new intger { Number = dbm.AddProject(infomation.User.DbName, infomation.Project) };
+            var temp = new intger { Number = dbm.AddProject(request.User.DbName, request.Project) };
             return Task.FromResult(temp);
         }
-        public override Task<intger> EditProject(ProjectUserInfomation infomation, ServerCallContext context)
+        public override Task<intger> EditProject(ProjectUserInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(new intger { Number = dbm.EditProject(infomation.Project) });
+            return Task.FromResult(new intger { Number = dbm.EditProject(request.Project) });
         }
-        public override Task<intger> RemoveProject(ProjectUserInfomation infomation, ServerCallContext context)
+        public override Task<intger> RemoveProject(ProjectUserInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(new intger { Number = dbm.RemoveProject(infomation.Project.Id, infomation.User.DbName) });
+            return Task.FromResult(new intger { Number = dbm.RemoveProject(request.Project.Id, request.User.DbName) });
         }
-        public override Task<D_Projects> GetProjects(UserDbInfomation infomation, ServerCallContext context)
+        public override Task<D_Projects> GetProjects(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            List<D_Project> something = dbm.GetProjects(infomation.DbName);
+            List<D_Project> something = dbm.GetProjects(request.DbName);
             var temp = new D_Projects();
             foreach (var item in something)
             {
@@ -66,61 +66,70 @@ namespace DatabaseDocomentService.Services
             }
             return Task.FromResult(temp);
         }
-
-#endregion
-#region Docoment
-        public override Task<D_Documents> GetDocuments(UserDbInfomation infomation, ServerCallContext context)
+        public override Task<intger> AddProjectMember(MemberInformation request, ServerCallContext context)
+        {
+            var temp = new intger { Number = dbm.AddProjectMember(request.User.ID, request.User.DbName) };
+            return Task.FromResult(temp);
+        }
+        public override Task<intger> RemoveProjectMember(MemberInformation request, ServerCallContext context)
+        {
+            var temp = new intger { Number = dbm.RemoveProjectMember(request.User.ID, request.User.DbName) };
+            return Task.FromResult(temp);
+        }
+        #endregion
+        #region Docoment
+        public override Task<D_Documents> GetDocuments(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             var temp = new D_Documents();
-            temp.DDocuments.AddRange(dbm.GetDocuments(infomation.ID));
+            temp.DDocuments.AddRange(dbm.GetDocuments(request.ID));
             return Task.FromResult(temp);
         }
         // documents
-        public override Task<intger> AddDocument(D_Document infomation, ServerCallContext context)
+        public override Task<intger> AddDocument(D_Document request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(new intger { Number = dbm.AddDocument(infomation) });
+            return Task.FromResult(new intger { Number = dbm.AddDocument(request) });
         }
-        public override Task<D_Document> GetDocument(UserDbInfomation infomation, ServerCallContext context)
+        public override Task<D_Document> GetDocument(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(dbm.GetDocument(infomation.ID));
+            return Task.FromResult(dbm.GetDocument(request.ID));
         }
-        public override Task<intger> UpdateDocument(D_Document infomation, ServerCallContext context)
+        public override Task<intger> UpdateDocument(D_Document request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(new intger { Number = dbm.UpdateDocument(infomation) });
+            return Task.FromResult(new intger { Number = dbm.UpdateDocument(request) });
         }
 
-        public override Task<intger> RemoveDocument(ProjectUserInfomation infomation, ServerCallContext context)
+        public override Task<intger> RemoveDocument(ProjectUserInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(new intger { Number = dbm.RemoveDocument(infomation.Project.Documents[0].ID, infomation.Project.Id) });
+            return Task.FromResult(new intger { Number = dbm.RemoveDocument(request.Project.Documents[0].ID, request.Project.Id) });
         }
 #endregion
 #region Remote
-        public override Task<intger> AddRemoteFile(D_RemoteFile infomation, ServerCallContext context)
+        public override Task<intger> AddRemoteFile(D_RemoteFile request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(dbm.AddRemoteFile(infomation));
+            return Task.FromResult(dbm.AddRemoteFile(request));
         }
-        public override Task<D_RemoteFile> GetRemoteFile(UserDbInfomation infomation, ServerCallContext context)
+        public override Task<D_RemoteFile> GetRemoteFile(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(dbm.GetRemoteFile(infomation.ID));
+            return Task.FromResult(dbm.GetRemoteFile(request.ID));
         }
-        public override Task<D_RemoteFile> UpdateRemoteFile(D_RemoteFile infomation, ServerCallContext context)
+        public override Task<D_RemoteFile> UpdateRemoteFile(D_RemoteFile request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(dbm.UpdateRemoteFile(infomation));
+            return Task.FromResult(dbm.UpdateRemoteFile(request));
         }
-        public override Task<intger> RemoveRemoteFile(UserDbInfomation infomation, ServerCallContext context)
+        public override Task<intger> RemoveRemoteFile(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             return Task.FromResult(new intger());
         }
-        public override Task<D_RemoteFiles> GetRemoteFiles(UserDbInfomation infomation, ServerCallContext context)
+        public override Task<D_RemoteFiles> GetRemoteFiles(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
             return Task.FromResult(new D_RemoteFiles());

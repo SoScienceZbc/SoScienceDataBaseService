@@ -782,7 +782,7 @@ namespace SoScienceDataServer
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
-                    cmd.Parameters.Add("@teacher", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    cmd.Parameters.Add("@username", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
                     con.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Dispose();
@@ -797,8 +797,8 @@ namespace SoScienceDataServer
                 using(MySqlCommand cmd = new MySqlCommand("SPDeleteProjectThemeCoTeacher", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
-                    cmd.Parameters.Add("@teacher", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
+                    cmd.Parameters.Add("@P_ID", MySqlDbType.Int32).Value = id;
+                    cmd.Parameters.Add("@T_Name", MySqlDbType.VarChar).Value = Convert.ToBase64String(hashing.ComputeHash(Encoding.Unicode.GetBytes(username)));
                     con.Open();
                     cmd.ExecuteNonQuery();
                     cmd.Dispose();

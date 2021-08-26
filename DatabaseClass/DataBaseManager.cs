@@ -265,7 +265,8 @@ namespace SoScienceDataServer
                             ProjectID = reader.GetInt32("ProjectID"),
                             Title = reader.GetString("Title"),
                             ID = reader.GetInt32("ID"),
-                            CompletedCount = reader.GetInt32("completed")
+                            CompletedCount = reader.GetInt32("completed"),
+                            Type = "Doc",
                         });
                     }
                     reader.Close();
@@ -441,6 +442,7 @@ namespace SoScienceDataServer
                             Title = reader.GetString("title"),
                             Data = reader.GetString("data"),
                             ID = reader.GetInt32("ID"),
+                            Type = "Doc",
                         };
                     }
                     reader.Close();

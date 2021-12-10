@@ -24,7 +24,7 @@ namespace SoScienceDataServer
 #if DEBUG
             Config = new ConfigurationBuilder().AddJsonFile("./AppCode.json").Build();
 #else
-            Config = new ConfigurationBuilder().AddJsonFile("/home/soscienceadmin/Services/AppCode.json").Build();
+            Config = new ConfigurationBuilder().AddJsonFile(Directory.GetCurrentDirectory() + "/AppCode.json").Build();
 #endif
 
             con =

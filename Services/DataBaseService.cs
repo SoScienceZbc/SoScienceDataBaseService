@@ -12,7 +12,7 @@ namespace DatabaseDocomentService.Services
     public class DataBaseService : GrpcDatabaseProject.GrpcDatabaseProjectBase
     {
 #if DEBUG
-        DataBaseManager dbm = new DataBaseManager("192.168.0.220");
+        DataBaseManager dbm = new DataBaseManager("10.108.239.199");
 #else
         DataBaseManager dbm = new DataBaseManager("localhost");
 #endif

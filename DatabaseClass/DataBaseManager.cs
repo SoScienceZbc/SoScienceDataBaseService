@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MySql.Data.MySqlClient;
+//using MySql.Data.MySqlClient;
+using MySqlConnector;
 using System.Data;
 using System.Security.Cryptography;
 using DatabaseService_Grpc;
@@ -15,7 +16,7 @@ namespace SoScienceDataServer
 {
     class DataBaseManager
     {
-        private string con;
+        private readonly string con;
         static IConfiguration Config;
         //private IHashing hashing;
         private SHA256 hashing;
@@ -24,7 +25,7 @@ namespace SoScienceDataServer
 #if DEBUG
             Config = new ConfigurationBuilder().AddJsonFile("./AppCode.json").Build();
 #else
-            Config = new ConfigurationBuilder().AddJsonFile("/home/soscienceadmin/Services/AppCode.json").Build();
+            Config = new ConfigurationBuilder().AddJsonFile(Directory.GetCurrentDirectory() + "/AppCode.json").Build();
 #endif
 
             con =

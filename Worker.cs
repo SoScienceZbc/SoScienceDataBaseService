@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DatabaseDocomentService.Services;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.IO;
 
 namespace DatabaseDocomentService
 {
@@ -24,14 +25,17 @@ namespace DatabaseDocomentService
         {
             //TODO: AddSSL in the "lo.UseHttps(Path,Name)"
             _logger.LogInformation("Worker running at: {time} just before Creating DocomentServce", DateTimeOffset.Now);
+            string cert = "/home/soscience/Desktop/Services/soscience.dk.pfx";
+            string pass = File.ReadAllText("/home/soscience/Desktop/Services/PassPhrase.txt");
+            Console.WriteLine("password length: " + pass.Length);
             await Host.CreateDefaultBuilder().ConfigureWebHostDefaults(cw =>
             {
                 cw.UseKestrel().UseStartup<GrpcAgent>().ConfigureKestrel(kj =>
                 {
                     kj.Listen(System.Net.IPAddress.Any, 48041, lo =>
                     {
-                        //lo.UseHttps();
-                        lo.Protocols = HttpProtocols.Http1;
+                        lo.Protocols = HttpProtocols.Http2;
+                        lo.UseHttps(cert, pass.Trim());
                     });
                 });
             }).Build().StartAsync(stoppingToken);           

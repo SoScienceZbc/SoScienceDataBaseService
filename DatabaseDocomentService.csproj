@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <UserSecretsId>dotnet-DatabaseDocomentService-55E75900-640F-482D-8BB0-AEE77D20098B</UserSecretsId>
     <Configurations>Debug;Release;test</Configurations>
   </PropertyGroup>
@@ -23,6 +23,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="MySql.Data" Version="8.0.26" />
+    <PackageReference Include="MySqlConnector" Version="2.1.4" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />      
   </ItemGroup>
 </Project>

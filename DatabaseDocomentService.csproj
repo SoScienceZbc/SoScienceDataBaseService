@@ -9,8 +9,13 @@
   <ItemGroup>
     <Compile Remove="DataClasses\Http.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Protos\RemoteMediaProto.proto" />
+  </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\Database.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\RemoteMediaProto.proto" />
   </ItemGroup>
 
   <ItemGroup>

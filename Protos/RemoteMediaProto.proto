@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option csharp_namespace = "Proto";
+package RemoteMediaGRPC;
+
+service RemoteMediaService {
+    rpc SendVideo(VideoRequest) returns (VideoReply);
+    rpc RetrieveVideo(RetrieveVideoRequest) returns (RetrieveVideoReply);
+    rpc UpdateVideo(ChangeTitleRequest) returns (VideoReply);
+    rpc DeleteVideo(RetrieveVideoRequest) returns (VideoReply);
+    rpc GetVideos(UserDbInformation) returns (VideoRequests);
+}
+
+message VideoRequest {
+    int32 ID = 1;
+    int32 projectID = 2;
+    string title = 3;
+    string type = 4;
+    bytes blobdata = 5;
+}
+
+message VideoReply {
+    bool ReplySuccessfull = 1;
+}
+
+message UserDbInformation {
+  int32 ID = 1;
+  string username = 2;
+}
+
+message RetrieveVideoRequest {
+  int32 ID = 1;
+}
+
+message ChangeTitleRequest {
+  int32 ID = 1;
+  string title = 2;
+}
+
+message RetrieveVideoReply {
+  bytes retrievedBlobdata = 1;
+  string type = 2;
+}
+
+message VideoRequests {
+  repeated VideoRequest VideoRequests = 1;
+}

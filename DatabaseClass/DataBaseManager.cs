@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration.Json;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Globalization;
+using Proto;
 
 namespace SoScienceDataServer
 {
@@ -842,5 +843,39 @@ namespace SoScienceDataServer
             return id;
         }
 #endregion
+
+        public VideoReply SendVideo(VideoRequest request)
+        {
+            VideoReply vr = new VideoReply();
+            Console.WriteLine("Entered SendVideo() in DataBaseManager");
+            vr.ReplySuccessfull = true;
+            /*
+            try 
+            {
+                using (MySqlConnection con = new MySqlConnection(this.con))
+                {
+                    using (MySqlCommand cmd = new MySqlCommand("Insert name of Stored Procedure for uploading video here", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        //Add Parameters
+                        cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = request.ProjectID;
+                        cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = request.Title;
+                        cmd.Parameters.Add("@type", MySqlDbType.VarChar).Value = request.Type;
+                        cmd.Parameters.Add("@blobdata", MySqlDbType.VarChar).Value = request.Blobdata;
+
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Dispose();
+                    }
+                }
+                vr.ReplySuccessfull = true;
+            }
+            catch(Exception e)
+            {
+                vr.ReplySuccessfull = false;
+            }*/
+
+            return vr;
+        }
     }
 }

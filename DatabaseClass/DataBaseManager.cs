@@ -844,10 +844,10 @@ namespace SoScienceDataServer
         }
 #endregion
 
-        public VideoReply SendVideo(VideoRequest request)
+        public MediaReply SendMedia(MediaRequest request)
         {
-            VideoReply vr = new VideoReply();
-            Console.WriteLine("Entered SendVideo() in DataBaseManager");
+            MediaReply vr = new MediaReply();
+            Console.WriteLine("Entered SendMedia() in DataBaseManager");
             vr.ReplySuccessfull = true;
             /*
             try 

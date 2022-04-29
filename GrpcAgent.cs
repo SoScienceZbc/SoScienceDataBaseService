@@ -40,7 +40,7 @@ namespace DatabaseDocomentService
             {
 
                 endpoints.MapGrpcService<DataBaseService>().EnableGrpcWeb();
-                endpoints.MapGrpcService<VideoService>().EnableGrpcWeb();
+                endpoints.MapGrpcService<MediaService>().EnableGrpcWeb();
 
             });
         }

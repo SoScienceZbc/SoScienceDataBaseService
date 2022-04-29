@@ -4,22 +4,21 @@ option csharp_namespace = "Proto";
 package RemoteMediaGRPC;
 
 service RemoteMediaService {
-    rpc SendVideo(VideoRequest) returns (VideoReply);
-    rpc RetrieveVideo(RetrieveVideoRequest) returns (RetrieveVideoReply);
-    rpc UpdateVideo(ChangeTitleRequest) returns (VideoReply);
-    rpc DeleteVideo(RetrieveVideoRequest) returns (VideoReply);
-    rpc GetVideos(UserDbInformation) returns (VideoRequests);
+    rpc SendMedia(MediaRequest) returns (MediaReply);
+    rpc RetrieveMedia(RetrieveMediaRequest) returns (RetrieveMediaReply);
+    rpc UpdateMedia(ChangeTitleRequest) returns (MediaReply);
+    rpc DeleteMedia(RetrieveMediaRequest) returns (MediaReply);
+    rpc GetMedias(UserDbInformation) returns (MediaRequests);
 }
 
-message VideoRequest {
-    int32 ID = 1;
+message MediaRequest {
     int32 projectID = 2;
     string title = 3;
     string type = 4;
     bytes blobdata = 5;
 }
 
-message VideoReply {
+message MediaReply {
     bool ReplySuccessfull = 1;
 }
 
@@ -28,7 +27,7 @@ message UserDbInformation {
   string username = 2;
 }
 
-message RetrieveVideoRequest {
+message RetrieveMediaRequest {
   int32 ID = 1;
 }
 
@@ -37,11 +36,17 @@ message ChangeTitleRequest {
   string title = 2;
 }
 
-message RetrieveVideoReply {
+message RetrieveMediaReply {
   bytes retrievedBlobdata = 1;
   string type = 2;
 }
 
-message VideoRequests {
-  repeated VideoRequest VideoRequests = 1;
+message MediaRequests {
+  repeated MediasReply AllMedias = 1;
+}
+
+message MediasReply {
+  int32 ID = 1;
+  string title = 2;
+  string type = 3;
 }

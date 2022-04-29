@@ -9,7 +9,7 @@ using Grpc.Core;
 
 namespace DatabaseDocomentService.Services
 {
-    class VideoService : RemoteMediaService.RemoteMediaServiceBase
+    class MediaService : RemoteMediaService.RemoteMediaServiceBase
     {
 #if DEBUG
         DataBaseManager dbm = new DataBaseManager("10.108.239.199");
@@ -17,10 +17,10 @@ namespace DatabaseDocomentService.Services
         DataBaseManager dbm = new DataBaseManager("localhost");
 #endif
 
-        public override Task<VideoReply> SendVideo(VideoRequest request, ServerCallContext context)
+        public override Task<MediaReply> SendMedia(MediaRequest request, ServerCallContext context)
         {
-            Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");
-            return Task.FromResult(dbm.SendVideo(request));
+            Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
+            return Task.FromResult(dbm.SendMedia(request));
         }
     }
 }

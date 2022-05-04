@@ -22,5 +22,12 @@ namespace DatabaseDocomentService.Services
             Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
             return Task.FromResult(dbm.SendMedia(request));
         }
+        public override Task<MediaRequests> GetMedias(UserDbInformation user, ServerCallContext context)
+        {
+            Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
+            MediaRequests medias = new MediaRequests();
+            medias.AllMedias.AddRange(dbm.GetMedias(user));
+            return Task.FromResult(medias);
+        }
     }
 }

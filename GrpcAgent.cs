@@ -38,10 +38,8 @@ namespace DatabaseDocomentService
 
             app.UseEndpoints(endpoints =>
             {
-
                 endpoints.MapGrpcService<DataBaseService>().EnableGrpcWeb();
                 endpoints.MapGrpcService<MediaService>().EnableGrpcWeb();
-
             });
         }
     }

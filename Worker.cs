@@ -32,6 +32,7 @@ namespace DatabaseDocomentService
             {
                 cw.UseKestrel().UseStartup<GrpcAgent>().ConfigureKestrel(kj =>
                 {
+                    kj.Limits.MaxRequestBodySize = null; //unlimited. Not sure if good idea in the end
                     kj.Listen(System.Net.IPAddress.Any, 48041, lo =>
                     {
                         lo.Protocols = HttpProtocols.Http2;

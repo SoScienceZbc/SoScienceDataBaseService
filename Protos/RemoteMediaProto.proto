@@ -12,10 +12,10 @@ service RemoteMediaService {
 }
 
 message MediaRequest {
-    int32 projectID = 2;
-    string title = 3;
-    string type = 4;
-    bytes blobdata = 5;
+    int32 projectID = 1;
+    string title = 2;
+    string type = 3;
+    bytes blobdata = 4;
 }
 
 message MediaReply {

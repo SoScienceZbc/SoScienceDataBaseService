@@ -77,7 +77,7 @@ namespace DatabaseDocomentService.Services
             return Task.FromResult(temp);
         }
         #endregion
-        #region Docoment
+#region Docoment
         public override Task<D_Documents> GetDocuments(UserDbInfomation request, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host}\nMethod: {context.Method}");

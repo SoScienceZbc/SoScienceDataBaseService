@@ -846,36 +846,84 @@ namespace SoScienceDataServer
 
         public MediaReply SendMedia(MediaRequest request)
         {
-            MediaReply vr = new MediaReply();
+            MediaReply response = new MediaReply();
             Console.WriteLine("Entered SendMedia() in DataBaseManager");
-            vr.ReplySuccessfull = true;
-            /*
+            
+            //vr.ReplySuccessfull = true;
             try 
             {
                 using (MySqlConnection con = new MySqlConnection(this.con))
                 {
-                    using (MySqlCommand cmd = new MySqlCommand("Insert name of Stored Procedure for uploading video here", con))
+                    using (MySqlCommand cmd = new MySqlCommand("SPInsertMedia", con))
                     {
+                        Console.WriteLine("ProjectID: " + request.ProjectID);
+                        Console.WriteLine("Title: " + request.Title);
+                        //Console.WriteLine("Blobdata: " + request.Blobdata);
+                        
+                        Console.WriteLine("Type: " + request.Type);
+
+                        byte[] mediaBytes = new byte[request.Blobdata.Length];
+                        mediaBytes = request.Blobdata.ToByteArray();
                         cmd.CommandType = CommandType.StoredProcedure;
                         //Add Parameters
                         cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = request.ProjectID;
                         cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = request.Title;
+                        cmd.Parameters.Add("@blobdata", MySqlDbType.LongBlob, request.Blobdata.Length).Value = mediaBytes;
                         cmd.Parameters.Add("@type", MySqlDbType.VarChar).Value = request.Type;
-                        cmd.Parameters.Add("@blobdata", MySqlDbType.VarChar).Value = request.Blobdata;
 
                         con.Open();
                         cmd.ExecuteNonQuery();
                         cmd.Dispose();
                     }
                 }
-                vr.ReplySuccessfull = true;
+                Console.WriteLine("Media uploaded successfully");
+                response.ReplySuccessfull = true;
             }
             catch(Exception e)
             {
-                vr.ReplySuccessfull = false;
-            }*/
+                Console.WriteLine("Something went wrong when trying to upload the file.");
+                Console.WriteLine(e.Message);
+                response.ReplySuccessfull = false;
+            }
 
-            return vr;
+            return response;
+        }
+        public List<MediasReply> GetMedias(Proto.UserDbInformation user)
+        {
+            List<MediasReply> allMedia = new List<MediasReply>();
+            try 
+            {
+                using (MySqlConnection con = new MySqlConnection(this.con))
+                {
+                    using (MySqlCommand cmd = new MySqlCommand("SPGetAllMedia", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        //Add Parameters
+                        cmd.Parameters.Add("@uid", MySqlDbType.Int32).Value = user.ID;
+                        cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = user.Username;
+
+                        con.Open();
+                        MySqlDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            allMedia.Add(new MediasReply
+                            {
+                                ID = reader.GetInt32("ID"),
+                                Title = reader.GetString("Title"),
+                                Type = reader.GetString("Type")
+                            });
+                        }
+                        reader.Close();
+                        cmd.Dispose();
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return allMedia;
         }
     }
 }

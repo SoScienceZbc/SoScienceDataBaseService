@@ -856,15 +856,10 @@ namespace SoScienceDataServer
                 {
                     using (MySqlCommand cmd = new MySqlCommand("SPInsertMedia", con))
                     {
-                        Console.WriteLine("ProjectID: " + request.ProjectID);
-                        Console.WriteLine("Title: " + request.Title);
-                        //Console.WriteLine("Blobdata: " + request.Blobdata);
-                        
-                        Console.WriteLine("Type: " + request.Type);
-
                         byte[] mediaBytes = new byte[request.Blobdata.Length];
                         mediaBytes = request.Blobdata.ToByteArray();
                         cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 300;
                         //Add Parameters
                         cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = request.ProjectID;
                         cmd.Parameters.Add("@title", MySqlDbType.VarChar).Value = request.Title;
@@ -888,7 +883,7 @@ namespace SoScienceDataServer
 
             return response;
         }
-        public List<MediasReply> GetMedias(Proto.UserDbInformation user)
+        public List<MediasReply> GetMedias(ProjectInformation project)
         {
             List<MediasReply> allMedia = new List<MediasReply>();
             try 
@@ -899,8 +894,7 @@ namespace SoScienceDataServer
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         //Add Parameters
-                        cmd.Parameters.Add("@uid", MySqlDbType.Int32).Value = user.ID;
-                        cmd.Parameters.Add("@name", MySqlDbType.VarChar).Value = user.Username;
+                        cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = project.ID;
 
                         con.Open();
                         MySqlDataReader reader = cmd.ExecuteReader();

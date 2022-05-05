@@ -8,7 +8,7 @@ service RemoteMediaService {
     rpc RetrieveMedia(RetrieveMediaRequest) returns (RetrieveMediaReply);
     rpc UpdateMedia(ChangeTitleRequest) returns (MediaReply);
     rpc DeleteMedia(RetrieveMediaRequest) returns (MediaReply);
-    rpc GetMedias(UserDbInformation) returns (MediaRequests);
+    rpc GetMedias(ProjectInformation) returns (MediaRequests);
 }
 
 message MediaRequest {
@@ -22,9 +22,8 @@ message MediaReply {
     bool ReplySuccessfull = 1;
 }
 
-message UserDbInformation {
+message ProjectInformation {
   int32 ID = 1;
-  string username = 2;
 }
 
 message RetrieveMediaRequest {

@@ -22,11 +22,11 @@ namespace DatabaseDocomentService.Services
             Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
             return Task.FromResult(dbm.SendMedia(request));
         }
-        public override Task<MediaRequests> GetMedias(UserDbInformation user, ServerCallContext context)
+        public override Task<MediaRequests> GetMedias(ProjectInformation project, ServerCallContext context)
         {
             Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
             MediaRequests medias = new MediaRequests();
-            medias.AllMedias.AddRange(dbm.GetMedias(user));
+            medias.AllMedias.AddRange(dbm.GetMedias(project));
             return Task.FromResult(medias);
         }
     }

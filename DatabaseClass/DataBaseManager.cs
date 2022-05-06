@@ -350,7 +350,7 @@ namespace SoScienceDataServer
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        id = Convert.ToInt32(reader.GetDecimal(0));
+                        id = reader.GetInt32(0);
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -511,7 +511,7 @@ namespace SoScienceDataServer
                     MySqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        remoteFile.ID = Convert.ToInt32(reader.GetDecimal(0));
+                        remoteFile.ID = reader.GetInt32(0);
                     }
                     reader.Close();
                     cmd.Dispose();
@@ -846,10 +846,9 @@ namespace SoScienceDataServer
 
         public MediaReply SendMedia(MediaRequest request)
         {
-            MediaReply response = new MediaReply();
             Console.WriteLine("Entered SendMedia() in DataBaseManager");
+            MediaReply response = new MediaReply();
             
-            //vr.ReplySuccessfull = true;
             try 
             {
                 using (MySqlConnection con = new MySqlConnection(this.con))
@@ -885,6 +884,7 @@ namespace SoScienceDataServer
         }
         public List<MediasReply> GetMedias(ProjectInformation project)
         {
+            Console.WriteLine("Entered GetMedias() in DataBaseManager");
             List<MediasReply> allMedia = new List<MediasReply>();
             try 
             {
@@ -918,6 +918,21 @@ namespace SoScienceDataServer
             }
 
             return allMedia;
+        }
+        public RetrieveMediaReply RetrieveMedia(RetrieveMediaRequest request)
+        {
+            Console.WriteLine("Entered RetrieveMedia() in DataBaseManager");
+            return new RetrieveMediaReply();
+        }
+        public MediaReply DeleteMedia(RetrieveMediaRequest request)
+        {
+            Console.WriteLine("Entered DeleteMedia() in DataBaseManager");
+            return new MediaReply() { ReplySuccessfull = true };
+        }
+        public MediaReply UpdateMedia(ChangeTitleRequest request)
+        {
+            Console.WriteLine("Entered UpdateMedia() in DataBaseManager");
+            return new MediaReply() { ReplySuccessfull = true };
         }
     }
 }

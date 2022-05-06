@@ -29,5 +29,20 @@ namespace DatabaseDocomentService.Services
             medias.AllMedias.AddRange(dbm.GetMedias(project));
             return Task.FromResult(medias);
         }
+        public override Task<RetrieveMediaReply> RetrieveMedia(RetrieveMediaRequest request, ServerCallContext context)
+        {
+            Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
+            return Task.FromResult(dbm.RetrieveMedia(request));
+        }
+        public override Task<MediaReply> DeleteMedia(RetrieveMediaRequest request, ServerCallContext context)
+        {
+            Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
+            return Task.FromResult(dbm.DeleteMedia(request));
+        }
+        public override Task<MediaReply> UpdateMedia(ChangeTitleRequest request, ServerCallContext context)
+        {
+            Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
+            return Task.FromResult(dbm.UpdateMedia(request));
+        }
     }
 }

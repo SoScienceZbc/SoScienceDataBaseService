@@ -48,4 +48,5 @@ message MediasReply {
   int32 ID = 1;
   string title = 2;
   string type = 3;
+  int32 ProjectID = 4;
 }

@@ -132,6 +132,7 @@ namespace SoScienceDataServer
 
                 project.Documents.AddRange(GetDocuments(id));
                 project.Documents.AddRange(GetRemoteFiles(id));
+                project.Mediainfos.AddRange(GetMedias(id));
             }
             return project;
         }
@@ -882,10 +883,10 @@ namespace SoScienceDataServer
 
             return response;
         }
-        public List<MediasReply> GetMedias(ProjectInformation project)
+        public List<DatabaseService_Grpc.D_MediaInfo> GetMedias(int projectId)
         {
             Console.WriteLine("Entered GetMedias() in DataBaseManager");
-            List<MediasReply> allMedia = new List<MediasReply>();
+            List<DatabaseService_Grpc.D_MediaInfo> allMedia = new List<DatabaseService_Grpc.D_MediaInfo>();
             try 
             {
                 using (MySqlConnection con = new MySqlConnection(this.con))
@@ -894,17 +895,18 @@ namespace SoScienceDataServer
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         //Add Parameters
-                        cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = project.ID;
+                        cmd.Parameters.Add("@pid", MySqlDbType.Int32).Value = projectId;
 
                         con.Open();
                         MySqlDataReader reader = cmd.ExecuteReader();
                         while (reader.Read())
                         {
-                            allMedia.Add(new MediasReply
+                            allMedia.Add(new DatabaseService_Grpc.D_MediaInfo
                             {
                                 ID = reader.GetInt32("ID"),
                                 Title = reader.GetString("Title"),
-                                Type = reader.GetString("Type")
+                                Type = reader.GetString("Type"),
+                                ProjectID = reader.GetInt32("ProjectID")
                             });
                         }
                         reader.Close();

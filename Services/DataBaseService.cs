@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DatabaseService_Grpc;
 using Microsoft.Extensions.Logging;
 using SoScienceDataServer;
+using Proto;
 
 namespace DatabaseDocomentService.Services
 {
@@ -61,6 +62,9 @@ namespace DatabaseDocomentService.Services
                 {
                     item.Documents.Add(d_Document);
                 }
+
+                item.Mediainfos.AddRange(dbm.GetMedias(item.Id));
+
                 temp.DProject.Add(item);
 
             }

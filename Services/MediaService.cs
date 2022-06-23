@@ -26,7 +26,7 @@ namespace DatabaseDocomentService.Services
         {
             Console.WriteLine($"Host:{context.Host} called Method:{context.Method}");
             MediaRequests medias = new MediaRequests();
-            medias.AllMedias.AddRange(dbm.GetMedias(project));
+            medias.MediaInfos.AddRange((IEnumerable<D_MediaInfo>)dbm.GetMedias(project.ID));
             return Task.FromResult(medias);
         }
         public override Task<RetrieveMediaReply> RetrieveMedia(RetrieveMediaRequest request, ServerCallContext context)

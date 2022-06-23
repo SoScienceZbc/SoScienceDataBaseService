@@ -97,7 +97,17 @@ message D_Project{
     repeated D_Document documents = 6;
     int32 ProjectThemeID = 7;
     bool CloseToDeletion = 8;
+    repeated D_MediaInfo mediainfos = 9;
 }
+
+// media information
+message D_MediaInfo{
+    int32 ID = 1;
+    string title = 2;
+    string type = 3;
+    int32 ProjectID = 4;
+}
+
 // document
 message D_Document{
         int32 ID = 1;

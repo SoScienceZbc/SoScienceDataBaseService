@@ -41,10 +41,10 @@ message RetrieveMediaReply {
 }
 
 message MediaRequests {
-  repeated MediasReply AllMedias = 1;
+  repeated D_MediaInfo mediaInfos = 1;
 }
 
-message MediasReply {
+message D_MediaInfo {
   int32 ID = 1;
   string title = 2;
   string type = 3;
